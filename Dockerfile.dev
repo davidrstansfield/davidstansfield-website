@@ -1,0 +1,34 @@
+# Dev-only Dockerfile for running this Jekyll site with Docker.
+# Provides a consistent Ruby + all gems environment without installing
+# anything on the host Mac (great for M-series where native gem builds
+# for sass-embedded / ffi / google-protobuf can be fiddly).
+#
+# Used by docker-compose.yml (the "jekyll" service builds from this).
+#
+# Base: Ruby 3.3 (csv still in stdlib; Jekyll 4.3.4 + its deps are happy here.
+# Ruby 3.4+ images break because Jekyll 4.3 unconditionally requires 'csv').
+
+FROM ruby:3.3-slim
+
+# System deps for building native extensions in gems (ffi, etc.) and git if needed.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /site
+
+# Copy Gemfiles first (better layer caching for `docker compose build`).
+COPY Gemfile Gemfile.lock ./
+
+# Install exactly the locked gems. Output goes to /usr/local/bundle by default.
+# (We mount a volume for it in compose so repeated starts don't re-download.)
+RUN bundle install --retry 5 --jobs 4
+
+# Expose Jekyll + LiveReload ports.
+EXPOSE 4000
+EXPOSE 35729
+
+# Default dev command (overridable in compose).
+# --force_polling is important for reliable FS watching under Docker Desktop on macOS.
+CMD ["bundle", "exec", "jekyll", "serve", "--force_polling", "-H", "0.0.0.0", "-P", "4000", "--livereload", "--drafts", "--future", "--incremental"]

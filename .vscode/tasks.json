@@ -1,0 +1,127 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Jekyll (host, Docker): Start dev server",
+      "type": "shell",
+      "command": "docker compose up",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "jekyll"
+      },
+      "isBackground": false,
+      "detail": "Use this when running VS Code on your Mac with Docker Desktop. Runs docker-compose.yml (same env as Codespaces)."
+    },
+    {
+      "label": "Jekyll (host, Docker): Rebuild + start (after Gemfile change)",
+      "type": "shell",
+      "command": "docker compose up --build",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "jekyll"
+      },
+      "detail": "Rebuild image (needed after editing Gemfile / Dockerfile.dev) then start. Host Docker only."
+    },
+    {
+      "label": "Jekyll (host, Docker): Stop dev server",
+      "type": "shell",
+      "command": "docker compose down",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "jekyll"
+      },
+      "detail": "Stop the local compose stack."
+    },
+    {
+      "label": "Jekyll (host, Docker): Build _site only",
+      "type": "shell",
+      "command": "docker compose run --rm jekyll bundle exec jekyll build --drafts",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "jekyll"
+      },
+      "detail": "One-off production-style build into _site/ using the container (host Docker)."
+    },
+
+    {
+      "label": "Jekyll (Codespace / inside container): Start dev server",
+      "type": "shell",
+      "command": "bundle exec jekyll serve --force_polling -H 0.0.0.0 -P 4000 --livereload --drafts --future --incremental",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "jekyll"
+      },
+      "detail": "Run this from inside a dev container or Codespace (you are already in the Ruby/gem environment). Starts the preview + LiveReload. Use the Ports panel or http://localhost:4000 (forwarded)."
+    },
+    {
+      "label": "Jekyll (Codespace / inside container): Stop dev server",
+      "type": "shell",
+      "command": "pkill -f 'jekyll serve' || pkill -f 'bundle exec jekyll' || echo 'No jekyll process found'",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "jekyll"
+      },
+      "detail": "Kill the running jekyll serve process (inside container)."
+    },
+    {
+      "label": "Jekyll (Codespace / inside container): Rebuild _site only",
+      "type": "shell",
+      "command": "bundle exec jekyll build --drafts",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "jekyll"
+      },
+      "detail": "Run a full build into _site/. Fast inside the container because gems are pre-installed."
+    },
+    {
+      "label": "Jekyll (Codespace / inside container): Doctor / check",
+      "type": "shell",
+      "command": "bundle exec jekyll doctor",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "jekyll"
+      },
+      "detail": "Run jekyll doctor to check for configuration issues."
+    }
+  ]
+}

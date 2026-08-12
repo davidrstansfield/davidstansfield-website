@@ -1,0 +1,77 @@
+{
+  "name": "davidstansfield-website (Jekyll dev)",
+  "build": {
+    "dockerfile": "../Dockerfile.dev",
+    "context": ".."
+  },
+
+  // We build from the same Dockerfile.dev used by docker-compose for local.
+  // This gives bit-for-bit consistent Ruby + gem environment between
+  // your laptop Docker and any Codespace.
+
+  "overrideCommand": true,
+  // Prevent the image's default CMD (which runs jekyll serve) from being PID 1.
+  // We want an interactive dev environment. We start the server via task or post-attach.
+
+  "workspaceFolder": "/site",
+
+  "forwardPorts": [4000, 35729],
+  "portsAttributes": {
+    "4000": {
+      "label": "Jekyll Site",
+      "onAutoForward": "openBrowserOnce",
+      "requireLocalPort": false,
+      "protocol": "http"
+    },
+    "35729": {
+      "label": "Jekyll LiveReload",
+      "onAutoForward": "silent"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rebornix.Ruby",
+        "Shopify.ruby-lsp",
+        "DavidAnson.vscode-markdownlint",
+        "yzhang.markdown-all-in-one",
+        "streetsidesoftware.code-spell-checker",
+        "redhat.vscode-yaml",
+        "ms-vscode-remote.remote-containers",
+        "GitHub.codespaces"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "markdown.preview.breaks": true,
+        "files.watcherExclude": {
+          "**/.git/objects/**": true,
+          "**/.git/subtree-cache/**": true,
+          "**/node_modules/*/**": true,
+          "**/_site/**": true,
+          "**/.jekyll-cache/**": true
+        }
+      }
+    }
+  },
+
+  // No automatic server start here — keeps the environment clean and predictable.
+  // After the Codespace opens:
+  //   1. VS Code will forward port 4000 automatically (watch the Ports tab or the notification).
+  //   2. Use Command Palette → "Tasks: Run Task" → "Jekyll (Codespace / inside container): Start dev server"
+  //      (or just open a terminal and paste the command).
+  // This matches the experience of the local Docker flow.
+
+  "postCreateCommand": "echo '✅ Codespace container ready (built from Dockerfile.dev). Gems from Gemfile.lock are pre-installed. Use Tasks: Run Task (or Ctrl+Shift+P) → pick a \"Jekyll (Codespace ...)\" task to start the server on port 4000.'",
+
+  "postAttachCommand": "echo 'Tip: Run the \"Jekyll (Codespace / inside container): Start dev server\" task for live preview + LiveReload at the forwarded http://localhost:4000' | cat",
+
+  "remoteUser": "root",
+
+  "shutdownAction": "stopContainer",
+
+  "features": {
+    // Uncomment if you want gh CLI available inside the Codespace for scripting
+    // "ghcr.io/devcontainers/features/github-cli:1": {}
+  }
+}

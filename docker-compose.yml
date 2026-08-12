@@ -1,0 +1,49 @@
+# Docker Compose for local Jekyll development (no Ruby/Jekyll needed on host)
+#
+# Prerequisites: Docker Desktop (already installed on this Mac)
+#
+# Usage:
+#   docker compose up
+#
+# Then open http://localhost:4000 in your browser.
+# - Live reload is enabled (edit files on host, browser refreshes automatically).
+# - Drafts are included (--drafts).
+# - Changes to _config.yml usually require restart of this container (Ctrl+C then `docker compose up`).
+#
+# First run will:
+#   - Build the custom image from Dockerfile.dev (Ruby 3.3 + system build tools + bundle install of your exact Gemfile.lock)
+#   - Start the server
+#
+# Image (re)build is only needed when you change Gemfile, Gemfile.lock or Dockerfile.dev.
+# All other edits (Markdown, SCSS, HTML includes, _config.yml for some settings) are picked up live.
+#
+# Stop: Ctrl+C or `docker compose down`
+#
+# Tips:
+# - Force rebuild (after Gemfile edits): `docker compose up --build`
+# - Tail logs: `docker compose logs -f`
+# - One-off command, e.g. doctor or production-style build:
+#     docker compose run --rm jekyll bundle exec jekyll build --drafts
+#     docker compose run --rm jekyll bundle exec jekyll doctor
+# - Interactive shell: `docker compose exec jekyll bash` (or `docker compose run --rm jekyll bash`)
+#
+# Matches project: jekyll ~> 4.3.4 + minimal-mistakes-jekyll + jekyll-feed etc.
+# --force_polling for reliable watch under Docker Desktop macOS bind mounts.
+
+services:
+  jekyll:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: davidstansfield-jekyll
+    volumes:
+      - .:/site
+    ports:
+      - "4000:4000"   # Site
+      - "35729:35729" # LiveReload websocket (optional but recommended)
+    environment:
+      - JEKYLL_ENV=development
+    # We can override/extend the CMD from Dockerfile.dev here if desired.
+    # The Dockerfile already includes good defaults for dev (livereload, drafts, etc.).
+    # command: bundle exec jekyll serve --force_polling -H 0.0.0.0 -P 4000 --livereload --drafts --future --incremental
+    restart: unless-stopped

@@ -1,0 +1,12 @@
+# Ignore for faster Docker build context (these are either generated or irrelevant to image build)
+_site
+.sass-cache
+.jekyll-cache
+.jekyll-metadata
+vendor
+.git
+.gitignore
+.DS_Store
+.env*
+# (We do send README.md and other .md in context; they are tiny and harmless.
+#  Only Gemfile* are COPY-ed into the image layers anyway.)
